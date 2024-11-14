@@ -72,7 +72,7 @@ def triangulation(
     coordinates2 = np.array([kp2[match.trainIdx].pt for match in matches])
 
     points_3d = cv2.triangulatePoints(P1, P2, coordinates1.T, coordinates2.T).T
-    return (points_3d / points_3d[:, 3:4])[..., :3] + 2
+    return (points_3d / points_3d[:, 3:4])[..., :3]
 
 
 def resection(
