@@ -21,5 +21,30 @@ def triangulation(
     :return: triangulated points, np.ndarray Nx3
     """
 
-    pass
-    # YOUR CODE HERE
+    rotation_matrix1 = camera_rotation1.T
+    rotation_matrix2 = camera_rotation2.T
+
+    translation_vector1 = -rotation_matrix1 @ camera_position1
+    translation_vector2 = -rotation_matrix2 @ camera_position2
+
+    P1 = np.dot(camera_matrix, np.hstack((rotation_matrix1, translation_vector1)))
+    P2 = np.dot(camera_matrix, np.hstack((rotation_matrix2, translation_vector2)))
+
+    coordinates1 = image_points1
+    coordinates2 = image_points2
+
+    points_3d = []
+    for p1, p2 in zip(coordinates1, coordinates2):
+        A = np.array([
+            p1[0] * P1[2] - P1[0],
+            p1[1] * P1[2] - P1[1],
+            p2[0] * P2[2] - P2[0],
+            p2[1] * P2[2] - P2[1]
+        ])
+
+        _, _, Vt = np.linalg.svd(A)
+        X = Vt[-1]
+
+        X /= X[3]
+        points_3d.append(X[:3])
+    return np.array(points_3d)
